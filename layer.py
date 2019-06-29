@@ -20,6 +20,8 @@ def dynamic_routing(batch_size, b_ij, u_hat, input_capsule_num):
             c_ij = leaky_routing[:,:,1:,:].unsqueeze(4)
         else:
             c_ij = F.softmax(b_ij, dim=2).unsqueeze(4)
+        
+        # Then, we represent a high-level capsule v_j by a weighted sum over those candidates, denoted as:
         v_j = squash_v1((c_ij * u_hat).sum(dim=1, keepdim=True), axis=3)
         if i < num_iterations - 1:
             b_ij = b_ij + (torch.cat([v_j] * input_capsule_num, dim=1) * u_hat).sum(3)
